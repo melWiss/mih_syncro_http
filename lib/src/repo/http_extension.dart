@@ -8,7 +8,7 @@ extension ResponseMethods on Response {
       return Response(
         jsonEncode(json['body']),
         json['status'],
-        headers: json['headers'],
+        headers: Map<String, String>.from(json['headers']),
         request: Request(json['method'], Uri.parse(json['url'])),
       );
     }
@@ -38,7 +38,7 @@ extension RequestMethods on Request {
         json['method'],
         Uri.parse(json['url']),
       );
-      request.headers.addAll(json['headers']);
+      request.headers.addAll(Map<String, String>.from(json['headers']));
       request.body = json['body'];
       return request;
     }

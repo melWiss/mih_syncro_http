@@ -1,17 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:http/http.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../interface.dart';
-import '../http_extension.dart';
 
 class JsonRepo implements RepoInterface {
   final String _name;
 
-  JsonRepo({required String name}) : _name = name;
+  JsonRepo({
+    /// the name of the repo
+    required String name,
+  }) : _name = name;
 
   Future<File> get _getDbFile async {
     Directory dirDB = await getApplicationDocumentsDirectory();
@@ -60,6 +62,21 @@ class JsonRepo implements RepoInterface {
       var f = await _getDbFile;
       db[json['url']] = json;
       f.writeAsStringSync(jsonEncode(db));
+    }
+  }
+
+  @override
+  Future write(Map<String, dynamic> json) async {
+    var db = await _connection;
+    var f = await _getDbFile;
+    if (!db.containsKey(json['url'])) {
+      db.addAll({json['url']: json});
+      f.writeAsStringSync(jsonEncode(db));
+    } else {
+      if (!mapEquals(db[json['url']], json)) {
+        db.addAll({json['url']: json});
+        f.writeAsStringSync(jsonEncode(db));
+      }
     }
   }
 }

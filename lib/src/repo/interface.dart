@@ -1,5 +1,3 @@
-import 'package:http/http.dart';
-
 abstract class RepoInterface {
   /// get cached json data
   Future<Map<String, dynamic>> get(String key);
@@ -13,6 +11,9 @@ abstract class RepoInterface {
 
   /// update an existent json data
   Future update(Map<String, dynamic> json);
+
+  /// a mix of insert and update
+  Future write(Map<String, dynamic> json);
 
   /// delete a cached json data by key
   Future delete(String key);
