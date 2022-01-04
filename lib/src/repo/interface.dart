@@ -1,0 +1,26 @@
+import 'package:http/http.dart';
+
+abstract class RepoInterface {
+  /// get cached json data
+  Future<Map<String, dynamic>> get(String key);
+  // Future<Map<String, dynamic>> get(
+  //   String key, {
+  //   Function(Map<String, dynamic> m1, Map<String, dynamic> m2)? where,
+  // });
+
+  /// insert new json data
+  Future insert(Map<String, dynamic> json);
+
+  /// update an existent json data
+  Future update(Map<String, dynamic> json);
+
+  /// delete a cached json data by key
+  Future delete(String key);
+}
+
+class HttpMethods {
+  static const String GET = "GET";
+  static const String POST = "POST";
+  static const String PUT = "PUT";
+  static const String DELETE = "DELETE";
+}

@@ -207,6 +207,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.2.4"
+  simple_connection_checker:
+    dependency: transitive
+    description:
+      name: simple_connection_checker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.1"
   sky_engine:
     dependency: transitive
     description: flutter
