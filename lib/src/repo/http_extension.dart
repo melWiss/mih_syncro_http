@@ -17,7 +17,7 @@ extension ResponseMethods on Response {
 
   Map<String, dynamic> toJson() {
     return {
-      "url": this.request!.url.path,
+      "url": this.request!.url.toString(),
       "status": this.statusCode,
       "method": this.request!.method,
       "headers": this.headers,
@@ -39,7 +39,7 @@ extension RequestMethods on Request {
         Uri.parse(json['url']),
       );
       request.headers.addAll(Map<String, String>.from(json['headers']));
-      request.body = json['body'];
+      request.body = jsonEncode(json['body']);
       return request;
     }
     throw HttpTypeException.NOT_COMPATIBLE_HTTP_TYPE;
@@ -47,7 +47,7 @@ extension RequestMethods on Request {
 
   Map<String, dynamic> toJson() {
     return {
-      "url": this.url.path,
+      "url": this.url.toString(),
       "status": null,
       "method": this.method,
       "headers": this.headers,

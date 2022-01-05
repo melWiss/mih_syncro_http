@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:http/http.dart' as h;
 import 'package:mih_syncro_http/src/repo/http_extension.dart';
@@ -12,9 +13,27 @@ class SynchronizedHttp {
   final RepoInterface _responsesRepo = JsonRepo(name: HttpType.RESPONSE);
   final SimpleConnectionChecker _connection = SimpleConnectionChecker();
 
-  // BehaviorSubject<h.Request> _requestController = BehaviorSubject<h.Request>();
+  BehaviorSubject<Map<String, dynamic>> _requestController =
+      BehaviorSubject<Map<String, dynamic>>();
   // BehaviorSubject<h.Response> _responseController =
   //     BehaviorSubject<h.Response>();
+
+  SynchronizedHttp() {
+    h.Client client = h.Client();
+    _connection.onConnectionChange.listen((event) async {
+      if (event) {
+        var requests = await _requestsRepo.getAll;
+        requests.forEach((key, value) async {
+          if (value['status'] >= 300 || value['status'] < 200) {
+            h.Request req = RequestMethods.fromJson(value);
+            var res = await client.send(req);
+            value['status'] = res.statusCode;
+            await _requestsRepo.update(value);
+          }
+        });
+      }
+    });
+  }
 
   Future<h.Response> get(Uri url, {Map<String, String>? headers}) async {
     try {
@@ -22,8 +41,36 @@ class SynchronizedHttp {
       await _responsesRepo.write(response.toJson());
       return response;
     } catch (e) {
-      var cached = await _responsesRepo.get(url.path);
+      var cached = await _responsesRepo.get(url.toString());
       return ResponseMethods.fromJson(cached);
+    }
+  }
+
+  Future<h.Response> post(
+    Uri url, {
+    Map<String, String>? headers,
+    Map<String, dynamic>? body,
+  }) async {
+    try {
+      var response = await h.post(
+        url,
+        headers: headers,
+        body: body != null ? jsonEncode(body) : null,
+      );
+      await _responsesRepo.write(response.toJson());
+      return response;
+    } catch (e) {
+      // var cached = await _responsesRepo.get(url.toString());
+      // return ResponseMethods.fromJson(cached);
+      await _requestsRepo.insert({
+        "url": url.toString(),
+        "status": null,
+        "method": HttpMethods.POST,
+        "headers": headers,
+        "body": body,
+        "type": HttpType.REQUEST,
+      });
+      throw "Will be synced when there's an internet connectivity";
     }
   }
 

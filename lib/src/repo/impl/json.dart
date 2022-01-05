@@ -24,7 +24,7 @@ class JsonRepo implements RepoInterface {
     return f;
   }
 
-  Future<Map<String, dynamic>> get _connection async {
+  Future<Map<String, dynamic>> get getAll async {
     File f = await _getDbFile;
     Map<String, dynamic> data = jsonDecode(f.readAsStringSync());
     return data;
@@ -32,7 +32,7 @@ class JsonRepo implements RepoInterface {
 
   @override
   Future delete(String key) async {
-    var db = await _connection;
+    var db = await getAll;
     if (db.remove(key) != null) {
       var f = await _getDbFile;
       f.writeAsStringSync(jsonEncode(db));
@@ -41,13 +41,13 @@ class JsonRepo implements RepoInterface {
 
   @override
   Future<Map<String, dynamic>> get(String key) async {
-    var db = await _connection;
+    var db = await getAll;
     return db[key];
   }
 
   @override
   Future insert(Map<String, dynamic> json) async {
-    var db = await _connection;
+    var db = await getAll;
     if (!db.containsKey(json['url'])) {
       var f = await _getDbFile;
       db.addAll({json['url']: json});
@@ -57,7 +57,7 @@ class JsonRepo implements RepoInterface {
 
   @override
   Future update(Map<String, dynamic> json) async {
-    var db = await _connection;
+    var db = await getAll;
     if (db.containsKey(json['url'])) {
       var f = await _getDbFile;
       db[json['url']] = json;
@@ -67,7 +67,7 @@ class JsonRepo implements RepoInterface {
 
   @override
   Future write(Map<String, dynamic> json) async {
-    var db = await _connection;
+    var db = await getAll;
     var f = await _getDbFile;
     if (!db.containsKey(json['url'])) {
       db.addAll({json['url']: json});
