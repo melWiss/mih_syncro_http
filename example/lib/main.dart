@@ -41,15 +41,49 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: FutureBuilder<Response>(
-          future:
-              syn.get(Uri.parse("https://jsonplaceholder.typicode.com/posts")),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) return Text(snapshot.error.toString());
-            if (snapshot.hasData)
-              return Text(jsonEncode(jsonDecode(snapshot.data!.body)));
-            return CircularProgressIndicator();
-          },
+        child: Column(
+          children: [
+            // Text("Future Get"),
+            // Expanded(
+            //   child: Container(
+            //     padding: EdgeInsets.all(8),
+            //     child: SingleChildScrollView(
+            //       child: FutureBuilder<Response>(
+            //         future: syn.get(Uri.parse(
+            //             "https://jsonplaceholder.typicode.com/posts")),
+            //         builder: (context, snapshot) {
+            //           if (snapshot.hasError)
+            //             return Text(snapshot.error.toString());
+            //           if (snapshot.hasData)
+            //             return Text(
+            //                 jsonEncode(jsonDecode(snapshot.data!.body)));
+            //           return CircularProgressIndicator();
+            //         },
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            Text("Stream Get"),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.all(8),
+                child: SingleChildScrollView(
+                  child: StreamBuilder<Response>(
+                    stream: syn.streamGet(Uri.parse(
+                        "https://jsonplaceholder.typicode.com/posts")),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError)
+                        return Text(snapshot.error.toString());
+                      if (snapshot.hasData)
+                        return Text(
+                            jsonEncode(jsonDecode(snapshot.data!.body)));
+                      return CircularProgressIndicator();
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

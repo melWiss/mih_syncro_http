@@ -26,4 +26,13 @@ class SynchronizedHttp {
       return ResponseMethods.fromJson(cached);
     }
   }
+
+  Stream<h.Response> streamGet(Uri url, {Map<String, String>? headers}) async* {
+    yield await get(url, headers: headers);
+    await for (bool connectionState in _connection.onConnectionChange) {
+      if (connectionState) {
+        yield await get(url, headers: headers);
+      }
+    }
+  }
 }
