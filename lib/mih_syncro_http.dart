@@ -1,6 +1,7 @@
 library mih_syncro_http;
 
-export 'src/synchro_http.dart';
-export 'package:http/http.dart';
-export 'package:simple_connection_checker/simple_connection_checker.dart';
-export 'package:rxdart/rxdart.dart';
+/// A Calculator.
+class Calculator {
+  /// Returns [value] plus 1.
+  int addOne(int value) => value + 1;
+}
