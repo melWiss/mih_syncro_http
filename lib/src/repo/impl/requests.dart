@@ -1,16 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../interface.dart';
 
-class JsonRepo implements RepoInterface {
+class RequestsRepo implements RepoInterface {
   final String _name;
 
-  JsonRepo({
+  RequestsRepo({
     /// the name of the repo
     required String name,
   }) : _name = name;
@@ -49,28 +48,18 @@ class JsonRepo implements RepoInterface {
   @override
   Future insert(Map<String, dynamic> json, {String? key}) async {
     var db = await getAll;
-    if (!db.containsKey(json['url'])) {
-      var f = await _getDbFile;
-      db.addAll({json['url']: json});
-      f.writeAsStringSync(jsonEncode(db));
-      return;
-    }
-    if (key != null && !db.containsKey(key)) {
-      var f = await _getDbFile;
+    var f = await _getDbFile;
+    if (key != null)
       db.addAll({key: json});
-      f.writeAsStringSync(jsonEncode(db));
-      return;
-    }
+    else
+      db.addAll({db.length.toString(): json});
+    f.writeAsStringSync(jsonEncode(db));
   }
 
   @override
   Future update(Map<String, dynamic> json, {String? key}) async {
     var db = await getAll;
-    if (key == null && db.containsKey(json['url'])) {
-      var f = await _getDbFile;
-      db[json['url']] = json;
-      f.writeAsStringSync(jsonEncode(db));
-    } else if (key != null && db.containsKey(key)) {
+    if (key != null && db.containsKey(key)) {
       var f = await _getDbFile;
       db[key] = json;
       f.writeAsStringSync(jsonEncode(db));
@@ -79,14 +68,6 @@ class JsonRepo implements RepoInterface {
 
   @override
   Future write(Map<String, dynamic> json, {String? key}) async {
-    var db = await getAll;
-    var f = await _getDbFile;
-    if (key == null) {
-      db.addAll({json['url']: json});
-      f.writeAsStringSync(jsonEncode(db));
-    } else {
-      db.addAll({key: json});
-      f.writeAsStringSync(jsonEncode(db));
-    }
+    await insert(json, key: key);
   }
 }
