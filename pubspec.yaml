@@ -10,9 +10,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http:
-  path:
-  path_provider: 
+  http: ^0.13.4
+  path: ^1.8.0
+  path_provider: ^2.0.8
+  simple_connection_checker: ^0.2.1
+  rxdart: ^0.27.3
 
 dev_dependencies:
   flutter_test:
