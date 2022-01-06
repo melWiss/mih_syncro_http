@@ -32,6 +32,7 @@ dependencies:
   mih_syncro_http:
     path: ../
   flutter_local_notifications: ^9.2.0
+  flutter_slidable: ^1.2.0
 
 
   # The following adds the Cupertino Icons font to your application.

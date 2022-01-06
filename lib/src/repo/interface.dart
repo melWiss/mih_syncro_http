@@ -10,13 +10,13 @@ abstract class RepoInterface {
   // });
 
   /// insert new json data
-  Future insert(Map<String, dynamic> json);
+  Future insert(Map<String, dynamic> json, {String? key});
 
   /// update an existent json data
-  Future update(Map<String, dynamic> json);
+  Future update(Map<String, dynamic> json, {String? key});
 
   /// a mix of insert and update
-  Future write(Map<String, dynamic> json);
+  Future write(Map<String, dynamic> json, {String? key});
 
   /// delete a cached json data by key
   Future delete(String key);

@@ -17,11 +17,11 @@ extension ResponseMethods on Response {
 
   Map<String, dynamic> toJson() {
     return {
-      "url": this.request!.url.toString(),
-      "status": this.statusCode,
-      "method": this.request!.method,
-      "headers": this.headers,
-      "body": jsonDecode(this.body),
+      "url": request!.url.toString(),
+      "status": statusCode,
+      "method": request!.method,
+      "headers": headers,
+      "body": jsonDecode(body),
       "type": HttpType.RESPONSE,
     };
   }
@@ -47,11 +47,11 @@ extension RequestMethods on Request {
 
   Map<String, dynamic> toJson() {
     return {
-      "url": this.url.toString(),
+      "url": url.toString(),
       "status": null,
-      "method": this.method,
-      "headers": this.headers,
-      "body": jsonDecode(this.body),
+      "method": method,
+      "headers": headers,
+      "body": jsonDecode(body),
       "type": HttpType.REQUEST,
     };
   }

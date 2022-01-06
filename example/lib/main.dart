@@ -1,6 +1,7 @@
-import 'dart:async';
 import 'dart:convert';
 
+import 'package:example/pages/stream_get.dart';
+import 'package:example/pages/synced_post.dart';
 import 'package:flutter/material.dart';
 import 'package:mih_syncro_http/mih_syncro_http.dart';
 
@@ -36,10 +37,6 @@ class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
   SynchronizedHttp syn = SynchronizedHttp();
   late TabController controller = TabController(length: 2, vsync: this);
-  TextEditingController textEditingController1 = TextEditingController();
-  TextEditingController textEditingController2 = TextEditingController();
-  TextEditingController textEditingController3 = TextEditingController();
-  TextEditingController textEditingController4 = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage>
               controller: controller,
               labelColor: Colors.blue,
               unselectedLabelColor: Colors.black87,
-              tabs: [
+              tabs: const [
                 Tab(
                   text: "Stream Get",
                 ),
@@ -67,83 +64,11 @@ class _MyHomePageState extends State<MyHomePage>
               child: TabBarView(
                 controller: controller,
                 children: [
+                  StreamGet(synchronizedHttp: syn),
                   SizedBox(
                     height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Text("Stream Get"),
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.all(8),
-                            child: SingleChildScrollView(
-                              child: StreamBuilder<Response>(
-                                stream: syn
-                                    .streamGet(Uri.parse(
-                                        "https://jsonplaceholder.typicode.com/posts"))
-                                    .asBroadcastStream(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasError)
-                                    return Text(snapshot.error.toString());
-                                  if (snapshot.hasData)
-                                    return Text(jsonEncode(
-                                        jsonDecode(snapshot.data!.body)));
-                                  return CircularProgressIndicator();
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Text("Stream Get"),
-                        Expanded(
-                          child: Container(
-                            child: Column(
-                              children: [
-                                TextField(
-                                  keyboardType: TextInputType.number,
-                                  controller: textEditingController1,
-                                ),
-                                TextField(
-                                  keyboardType: TextInputType.number,
-                                  controller: textEditingController2,
-                                ),
-                                TextField(
-                                  controller: textEditingController3,
-                                ),
-                                TextField(
-                                  controller: textEditingController4,
-                                ),
-                                ElevatedButton(
-                                  child: Text("Submit"),
-                                  onPressed: () {
-                                    syn.post(
-                                      Uri.parse(
-                                          "https://jsonplaceholder.typicode.com/posts"),
-                                      headers: {
-                                        "Content-Type": "application/json"
-                                      },
-                                      body: {
-                                        "userId": int.parse(
-                                            textEditingController1.text),
-                                        "id": int.parse(
-                                            textEditingController2.text),
-                                        "title": textEditingController3.text,
-                                        "body": textEditingController4.text,
-                                      },
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+                    child: SyncedPost(
+                      synchronizedHttp: syn,
                     ),
                   ),
                 ],
