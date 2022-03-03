@@ -17,7 +17,12 @@ class SynchronizedHttp {
 
   final BehaviorSubject<Map<String, dynamic>> _requestController =
       BehaviorSubject<Map<String, dynamic>>();
+  final BehaviorSubject<bool> _beepController =
+      BehaviorSubject<bool>.seeded(false);
   Stream<Map<String, dynamic>> get requestsStream => _requestController.stream;
+
+  RepoInterface get requestsRepo => _requestsRepo;
+  RepoInterface get responsesRepo => _responsesRepo;
 
   SynchronizedHttp() {
     _requestsRepo.getAll.then((value) {
@@ -26,6 +31,7 @@ class SynchronizedHttp {
       _connection.onConnectionChange.listen((event) async {
         if (event) {
           var requests = await _requestsRepo.getAll;
+          int i = 0;
           requests.forEach((key, value) async {
             if (value["status"] == null ||
                 (value['status'] >= 300 || value['status'] < 200)) {
@@ -34,6 +40,10 @@ class SynchronizedHttp {
               value['status'] = res.statusCode;
               _requestController.add(requests);
               await _requestsRepo.update(value, key: key);
+            }
+            i++;
+            if (i == requests.length) {
+              _beepController.add(event);
             }
           });
         }
@@ -73,7 +83,36 @@ class SynchronizedHttp {
         "status": null,
         "method": HttpMethods.POST,
         "headers": headers,
-        "body": body,
+        "body": body ?? {},
+        "type": HttpType.REQUEST,
+      });
+      _requestController.add(await _requestsRepo.getAll);
+      throw "Will be synced when there's an internet connectivity";
+    }
+  }
+
+  Future<h.Response> delete(
+    Uri url, {
+    Map<String, String>? headers,
+    Map<String, dynamic>? body,
+  }) async {
+    try {
+      var response = await h.delete(
+        url,
+        headers: headers,
+        body: body,
+      );
+      // await _responsesRepo.write(response.toJson());
+      return response;
+    } catch (e) {
+      // var cached = await _responsesRepo.get(url.toString());
+      // return ResponseMethods.fromJson(cached);
+      await _requestsRepo.write({
+        "url": url.toString(),
+        "status": null,
+        "method": HttpMethods.DELETE,
+        "headers": headers,
+        "body": body ?? {},
         "type": HttpType.REQUEST,
       });
       _requestController.add(await _requestsRepo.getAll);
@@ -83,7 +122,7 @@ class SynchronizedHttp {
 
   Stream<h.Response> streamGet(Uri url, {Map<String, String>? headers}) async* {
     yield await get(url, headers: headers);
-    await for (bool connectionState in _connection.onConnectionChange) {
+    await for (bool connectionState in _beepController.stream) {
       if (connectionState) {
         yield await get(url, headers: headers);
       }
