@@ -91,6 +91,35 @@ class SynchronizedHttp {
     }
   }
 
+  Future<h.Response> put(
+    Uri url, {
+    Map<String, String>? headers,
+    Map<String, dynamic>? body,
+  }) async {
+    try {
+      var response = await h.put(
+        url,
+        headers: headers,
+        body: body != null ? jsonEncode(body) : null,
+      );
+      // await _responsesRepo.write(response.toJson());
+      return response;
+    } catch (e) {
+      // var cached = await _responsesRepo.get(url.toString());
+      // return ResponseMethods.fromJson(cached);
+      await _requestsRepo.write({
+        "url": url.toString(),
+        "status": null,
+        "method": HttpMethods.PUT,
+        "headers": headers,
+        "body": body ?? {},
+        "type": HttpType.REQUEST,
+      });
+      _requestController.add(await _requestsRepo.getAll);
+      throw "Will be synced when there's an internet connectivity";
+    }
+  }
+
   Future<h.Response> delete(
     Uri url, {
     Map<String, String>? headers,
