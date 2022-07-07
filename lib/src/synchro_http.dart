@@ -24,7 +24,11 @@ class SynchronizedHttp {
   RepoInterface get requestsRepo => _requestsRepo;
   RepoInterface get responsesRepo => _responsesRepo;
 
-  SynchronizedHttp() {
+  SynchronizedHttp({
+    /// a internet address that we will test on whether it's connected to it or not.
+    String? lookupAddress,
+  }) {
+    if (lookupAddress != null) _connection.setLookUpAddress(lookupAddress);
     _requestsRepo.getAll.then((value) {
       _requestController.add(value);
       h.Client client = h.Client();
