@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as h;
+import 'dart:developer';
 import 'package:mih_syncro_http/src/repo/http_extension.dart';
 import 'package:mih_syncro_http/src/repo/impl/json.dart';
 import 'package:mih_syncro_http/src/repo/impl/requests.dart';
@@ -61,6 +62,7 @@ class SynchronizedHttp {
       await _responsesRepo.write(response.toJson());
       return response;
     } catch (e) {
+      log("error:: " + e.toString());
       var cached = await _responsesRepo.get(url.toString());
       return ResponseMethods.fromJson(cached);
     }
