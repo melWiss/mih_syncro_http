@@ -16,7 +16,7 @@ class JsonRepo implements RepoInterface {
   }) : _name = name;
 
   Future<File> get _getDbFile async {
-    Directory dirDB = await getApplicationDocumentsDirectory();
+    Directory dirDB = await getApplicationSupportDirectory();
     File f = File(join(dirDB.path, "$_name.json"));
     if (!f.existsSync()) {
       f.writeAsStringSync(jsonEncode({}));

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:example/pages/stream_get.dart';
+import 'package:example/pages/synced_delete.dart';
 import 'package:example/pages/synced_post.dart';
 import 'package:flutter/material.dart';
 import 'package:mih_syncro_http/mih_syncro_http.dart';
@@ -36,7 +37,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
   SynchronizedHttp syn = SynchronizedHttp();
-  late TabController controller = TabController(length: 2, vsync: this);
+  late TabController controller = TabController(length: 3, vsync: this);
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +59,9 @@ class _MyHomePageState extends State<MyHomePage>
                 Tab(
                   text: "Synced Post",
                 ),
+                Tab(
+                  text: "Synced Delete",
+                ),
               ],
             ),
             Expanded(
@@ -68,6 +72,12 @@ class _MyHomePageState extends State<MyHomePage>
                   SizedBox(
                     height: MediaQuery.of(context).size.height,
                     child: SyncedPost(
+                      synchronizedHttp: syn,
+                    ),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: SyncedDelete(
                       synchronizedHttp: syn,
                     ),
                   ),
